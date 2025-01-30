@@ -1,0 +1,19 @@
+import boto3
+#python use packckages (pandas, numpy) .. similarly
+# boto3 is a package used to interact with aws services using python lang.
+
+aws_access_key_id = 'aws_access_key_id'
+aws_secret_access_key = 'aws_secret_access_key
+# Create an IAM session
+iam_session = boto3.Session(
+    aws_access_key_id=aws_access_key_id,
+    aws_secret_access_key=aws_secret_access_key
+)
+
+
+client = boto3.client('rds',region_name='ap-south-1',aws_access_key_id=aws_access_key_id,aws_secret_access_key=aws_secret_access_key)
+response = client.delete_db_instance(
+    DBInstanceIdentifier="mysqldatabase",
+    SkipFinalSnapshot=True,
+    DeleteAutomatedBackups=True
+)
