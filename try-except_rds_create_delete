@@ -1,0 +1,48 @@
+import boto3
+import botocore.exceptions
+
+try:
+    # Creating a client session for RDS using region name, aws_access_key_id & aws_secret_access_key
+    client = boto3.client('rds', region_name="ap-south-1",
+                          aws_secret_access_key='YOUR_AWS_SECRET_ACCESS_KEY',
+                          aws_access_key_id='YOUR_AWS_ACCESS_KEY_ID')
+
+    try:
+        # Deleting an existing instance
+        print("Deleting RDS instance...")
+        response = client.delete_db_instance(
+            DBInstanceIdentifier='newpoc',
+            SkipFinalSnapshot=True,
+            DeleteAutomatedBackups=True
+        )
+        print("RDS instance deleted successfully.")
+    except botocore.exceptions.ClientError as e:
+        print(f"Error deleting RDS instance: {e}")
+
+    try:
+        # To cross-check if any RDS is available
+        print("Checking available RDS instances...")
+        response = client.describe_db_instances()
+        print(response)
+    except botocore.exceptions.ClientError as e:
+        print(f"Error describing RDS instances: {e}")
+
+    try:
+        # Creating a new RDS in AWS
+        print("Creating new RDS instance...")
+        response = client.create_db_instance(
+            DBName='mysqldbtestdb',
+            DBInstanceIdentifier='newpoc1',
+            AllocatedStorage=20,
+            DBInstanceClass='db.t4g.micro',
+            Engine='mysql',
+            MasterUsername='admin',
+            MasterUserPassword='Mypassword.1',
+            PubliclyAccessible=True
+        )
+        print("RDS instance created successfully.")
+    except botocore.exceptions.ClientError as e:
+        print(f"Error creating RDS instance: {e}")
+
+except Exception as e:
+    print(f"Unexpected error: {e}")
