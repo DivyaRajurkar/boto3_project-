@@ -1,0 +1,25 @@
+import boto3
+
+client = boto3.client('ec2',
+                      region_name="ap-south-1",
+                      aws_access_key_id='xxxxxxxxxxxxx',
+                      aws_secret_access_key='xxxxxxxxxxxxxxxxxxxxxxxxx'
+                      )
+#https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ec2.html
+instance = client.run_instances(
+    ImageId="ami-00bb6a80f01f03502",  # Ubuntu 20.04 LTS AMI ID
+    InstanceType="t2.micro",  # Free-tier eligible instance type
+    KeyName="divya2kp",  # Key pair for SSH access
+    MinCount=1,
+    MaxCount=1,
+)
+
+'''ImageId
+ Ubuntu, 24.04----ami-00bb6a80f01f03502
+ Microsoft Windows Server 2025 ---ami-007c016ccb6966b3d
+ Red Hat, Inc.---ami-02ddb77f8f93ca4ca
+'''
+
+# Instance ID of the EC2 instance to be terminated
+response = client.terminate_instances(InstanceIds=['i-0d983af16c0c1fe67'])
+print(response)
