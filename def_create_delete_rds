@@ -1,0 +1,83 @@
+import boto3
+import botocore.exceptions
+
+def create_rds_client(region, access_key, secret_key):
+    """Create an RDS client session."""
+    try:
+        client = boto3.client('rds', region_name=region,
+                              aws_access_key_id=access_key,  # 🔴 REPLACE THIS
+                              aws_secret_access_key=secret_key)  # 🔴 REPLACE THIS
+        print("RDS client created successfully.")
+        return client
+    except Exception as e:
+        print(f"Error creating RDS client: {e}")
+        return None
+
+def delete_rds_instance(client, instance_id):
+    """Delete an existing RDS instance."""
+    try:
+        print(f"🗑 Deleting RDS instance: {instance_id}...")
+        response = client.delete_db_instance(
+            DBInstanceIdentifier=instance_id,
+            SkipFinalSnapshot=True,
+            DeleteAutomatedBackups=True
+        )
+        print("RDS instance deleted successfully.")
+    except botocore.exceptions.ClientError as e:
+        print(f"Error deleting RDS instance: {e}")
+
+def describe_rds_instances(client):
+    """Describe available RDS instances."""
+    try:
+        print("🔍 Checking available RDS instances...")
+        response = client.describe_db_instances()
+        print(response)
+    except botocore.exceptions.ClientError as e:
+        print(f"Error describing RDS instances: {e}")
+
+def create_rds_instance(client, db_name, instance_id, storage, instance_class, engine, username, password):
+    """Create a new RDS instance."""
+    try:
+        print(f"Creating RDS instance: {instance_id}...")
+        response = client.create_db_instance(
+            DBName=db_name,
+            DBInstanceIdentifier=instance_id,
+            AllocatedStorage=storage,
+            DBInstanceClass=instance_class,
+            Engine=engine,
+            MasterUsername=username,
+            MasterUserPassword=password,
+            PubliclyAccessible=True
+        )
+        print("RDS instance created successfully.")
+    except botocore.exceptions.ClientError as e:
+        print(f" Error creating RDS instance: {e}")
+
+if __name__ == "__main__":
+    # ✅ REPLACE THESE VALUES WITH YOUR ACTUAL AWS CREDENTIALS
+    REGION = "ap-south-1"
+    AWS_ACCESS_KEY = "YOUR_AWS_ACCESS_KEY_ID"  # 🔴 REPLACE THIS
+    AWS_SECRET_KEY = "YOUR_AWS_SECRET_ACCESS_KEY"  # 🔴 REPLACE THIS
+
+    # ✅ REPLACE WITH YOUR RDS CONFIGURATION
+    RDS_INSTANCE_ID_TO_DELETE = "newpoc"  # 🔴 REPLACE THIS
+    NEW_RDS_DB_NAME = "mysqldbtestdb"  # 🔴 REPLACE THIS
+    NEW_RDS_INSTANCE_ID = "newpoc1"  # 🔴 REPLACE THIS
+    STORAGE_SIZE = 20  # GB
+    INSTANCE_CLASS = "db.t4g.micro"  # 🔴 REPLACE THIS (Modify as needed)
+    ENGINE = "mysql"  # 🔴 REPLACE THIS (Modify if using PostgreSQL, etc.)
+    MASTER_USERNAME = "admin"  # 🔴 REPLACE THIS (Set your admin username)
+    MASTER_PASSWORD = "Mypassword.1"  # 🔴 REPLACE THIS (Set your password)
+
+    # ✅ Initialize RDS client
+    client = create_rds_client(REGION, AWS_ACCESS_KEY, AWS_SECRET_KEY)
+
+    if client:
+        # ✅ Delete an existing RDS instance
+        delete_rds_instance(client, RDS_INSTANCE_ID_TO_DELETE)
+
+        # ✅ Check available RDS instances
+        describe_rds_instances(client)
+
+        # ✅ Create a new RDS instance
+        create_rds_instance(client, NEW_RDS_DB_NAME, NEW_RDS_INSTANCE_ID, STORAGE_SIZE, INSTANCE_CLASS, ENGINE, MASTER_USERNAME, MASTER_PASSWORD)
